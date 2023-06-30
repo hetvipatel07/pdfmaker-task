@@ -1,42 +1,108 @@
-const express = require('express');
-const pdfMake = require('pdfmake');
+const express = require("express");
+const pdfMake = require("pdfmake");
 
 const app = express();
 const port = 3030;
 
-app.get('/generate-pdf', (req, res) => {
-  // Define the font definition
+app.get("/generate-pdf", (req, res) => {
   const fonts = {
     Roboto: {
-      normal: 'fonts/Roboto-Regular.ttf',
-      bold: 'fonts/Roboto-Bold.ttf',
-      italics: 'fonts/Roboto-Italic.ttf',
-      bolditalics: 'fonts/Roboto-BoldItalic.ttf',
+      normal: "fonts/Roboto-Regular.ttf",
+      bold: "fonts/Roboto-Bold.ttf",
+      italics: "fonts/Roboto-Italic.ttf",
+      bolditalics: "fonts/Roboto-BoldItalic.ttf",
     },
   };
 
-  // Define the document definition
   const documentDefinition = {
     content: [
-      { text: 'This is a dummy PDF generated using pdfmake!', font: 'Roboto' },
-      { text: 'You can add more text, images, tables, and other elements to customize it.', font: 'Roboto' },
+      {
+        image: "download.png",
+        width: 375,
+      },
+
+      {
+        style: "tableExample",
+        width: "auto",
+        table: {
+          body: [
+            ["PAY SLIP", " ", "PAY MONTH", "MARCH_2023"],
+            ["Employee Name", " ", "Casual Leave", "6"],
+            ["Designation", " ", "Sick Leave", "1"],
+            ["Working Days", "31", "Used Leave", "1"],
+            ["Worked days", " ", "Total Balance Leave", "6"],
+            ["CTC", "15000.00", " ", " "],
+          ],
+        },
+      },
+      {
+        text: "\n",
+      },
+
+      {
+        style: "tableExample",
+        width: "*",
+        table: {
+          body: [
+            ["Earnings", "Amount", "Deduction", "Amount"],
+            ["Basic", "9000.00", "LWP (Leave Without Pay)", "0.00"],
+            ["HRA", "4500.00", " ", " "],
+            ["Conveyance", "300.00", "", ""],
+            ["Medical", "600.00", " ", " "],
+            ["Insurance", "600.00", " ", " "],
+            ["Total Earning", "15000.00", "Total Deduction", "0.00"],
+          ],
+        },
+      },
+
+      {
+        text: "\n",
+      },
+      {
+        text: "\n",
+      },
+      {
+        text: "\n",
+      },
+
+      {
+        style: "tableExample",
+        table: {
+          body: [[" CTC ", " 15000"]],
+        },
+      },
+
+      {
+        text: "\n",
+      },
+
+      {
+        style: "tableExample",
+        table: {
+          body: [
+            ["Basic 60%", "9000"],
+            ["Hra 30% of CTC", "9000"],
+            ["Conveyane 2% of CTC", "4500"],
+            ["Medical 4% of CTC", "600"],
+            ["Insurance 4% of CTC", "600"],
+            [" ", "15000"],
+          ],
+        },
+      },
     ],
+
     defaultStyle: {
-      font: 'Roboto',
+      font: "Roboto",
     },
   };
 
-  // Create a PDF instance
   const printer = new pdfMake(fonts);
 
-  // Generate the PDF
   const pdfDoc = printer.createPdfKitDocument(documentDefinition);
 
-  // Set the appropriate headers for PDF response
-  res.setHeader('Content-Type', 'application/pdf');
-  res.setHeader('Content-Disposition', 'attachment; filename=dummy.pdf');
+  res.setHeader("Content-Type", "application/pdf");
+  res.setHeader("Content-Disposition", "attachment; filename=dummy.pdf");
 
-  // Stream the PDF directly to the response
   pdfDoc.pipe(res);
   pdfDoc.end();
 });
